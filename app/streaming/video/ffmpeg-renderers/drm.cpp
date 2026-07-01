@@ -843,6 +843,12 @@ bool DrmRenderer::initialize(PDECODER_PARAMETERS params)
                 }
             }
 
+            // Don't reuse the video plane as an overlay plane
+            if (plane->plane_id == m_VideoPlane.objectId()) {
+                drmModeFreePlane(plane);
+                continue;
+            }
+
             DrmPropertyMap props { m_DrmFd, planeRes->planes[i], DRM_MODE_OBJECT_PLANE };
             // Only consider overlay or primary planes as valid targets
             // The latter might seem strange, but some DRM devices use

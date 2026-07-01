@@ -53,26 +53,32 @@ qmake6 .. \
 make -j"$(nproc)" release
 cd ..
 
-# ── Install binary ──────────────────────────────────────
+# ── Install Moonlight binary ────────────────────────────
 echo "Installing Moonlight..."
 sudo cp build/app/moonlight /usr/local/bin/
-sudo cp scripts/docker/entrypoint-image.sh /dev/null 2>/dev/null || true
+
+# ── Build kiosk shell ──────────────────────────────────
+echo "Building kiosk shell..."
+sudo apt-get install -y -qq qt6-quickcontrols2-6.5-dev \
+    qml6-module-qtquick-controls2 2>/dev/null || true
+
+mkdir -p build-kiosk && cd build-kiosk
+qmake6 ../kiosk-shell CONFIG+=embedded QMAKE_CFLAGS_ISYSTEM=
+make -j"$(nproc)" release
+cd ..
+
+echo "Installing kiosk shell..."
+sudo cp build-kiosk/moonlight-kiosk /usr/local/bin/
+sudo cp app/deploy/linux/rpi/moonlight-kiosk-launcher.sh /usr/local/bin/
+sudo chmod +x /usr/local/bin/moonlight-kiosk-launcher.sh
 
 # ── Install systemd service (kiosk) ─────────────────────
 echo "Installing kiosk service..."
-SERVICE_SRC=""
-for path in app/deploy/linux/rpi/moonlight-rpi.service \
-            deploy/linux/rpi/moonlight-rpi.service; do
-    if [ -f "$path" ]; then
-        SERVICE_SRC="$path"
-        break
-    fi
-done
 
 sudo tee /etc/systemd/system/moonlight-rpi.service > /dev/null << 'SERVICEEOF'
 [Unit]
-Description=Moonlight Game Streaming (Raspberry Pi)
-After=multi-user.target
+Description=Moonlight Kiosk (Raspberry Pi)
+After=network.target multi-user.target
 
 [Service]
 Type=simple
@@ -81,11 +87,12 @@ Group=pi
 Environment=HOME=/home/pi
 Environment=QT_QPA_PLATFORM=eglfs
 Environment=QT_QPA_EGLFS_ALWAYS_SET_MODE=1
+Environment=QT_QPA_EGLFS_FORCEVSYNC=1
 Environment=SDL_VIDEODRIVER=kmsdrm
 Environment=SDL_HINT_KMSDRM_REQUIRE_DRM_MASTER=0
 Environment=DISPLAY=
 ExecStartPre=/bin/sh -c 'while ! [ -c /dev/dri/card0 ]; do sleep 1; done'
-ExecStart=/usr/local/bin/moonlight
+ExecStart=/usr/local/bin/moonlight-kiosk-launcher.sh
 Restart=on-failure
 RestartSec=5
 Nice=-10

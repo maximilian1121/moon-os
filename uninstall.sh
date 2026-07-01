@@ -18,11 +18,13 @@ if [ -f /etc/systemd/system/moonlight-rpi.service ]; then
     sudo systemctl daemon-reload
 fi
 
-# ── Remove binary ──────────────────────────────────────
-if [ -f /usr/local/bin/moonlight ]; then
-    echo "Removing /usr/local/bin/moonlight..."
-    sudo rm /usr/local/bin/moonlight
-fi
+# ── Remove binaries ────────────────────────────────────
+for bin in moonlight moonlight-kiosk moonlight-kiosk-launcher.sh; do
+    if [ -f "/usr/local/bin/$bin" ]; then
+        echo "Removing /usr/local/bin/$bin..."
+        sudo rm "/usr/local/bin/$bin"
+    fi
+done
 
 # ── Restore display manager (re-enable desktop) ───────
 echo "Restoring desktop environment..."

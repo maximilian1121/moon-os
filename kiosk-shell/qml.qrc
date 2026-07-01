@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/main.qml</file>
+        <file>qml/OnboardingScreen.qml</file>
+        <file>qml/MainMenu.qml</file>
+        <file>qml/WifiScreen.qml</file>
+        <file>qml/BluetoothScreen.qml</file>
+        <file>qml/SettingsScreen.qml</file>
+        <file>qml/ControllerButton.qml</file>
+        <file>qml/ControllerListItem.qml</file>
+    </qresource>
+</RCC>
