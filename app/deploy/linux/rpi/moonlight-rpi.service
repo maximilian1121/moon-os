@@ -1,0 +1,24 @@
+[Unit]
+Description=Moonlight Game Streaming (Raspberry Pi)
+Documentation=https://github.com/moonlight-stream/moonlight-docs/wiki/Installing-Moonlight-Qt-on-Raspberry-Pi-4
+After=multi-user.target
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+Environment=HOME=/home/pi
+Environment=QT_QPA_PLATFORM=eglfs
+Environment=QT_QPA_EGLFS_ALWAYS_SET_MODE=1
+Environment=SDL_VIDEODRIVER=kmsdrm
+Environment=SDL_HINT_KMSDRM_REQUIRE_DRM_MASTER=0
+Environment=DISPLAY=
+Environment=XDG_RUNTIME_DIR=/run/user/1000
+ExecStartPre=/bin/sh -c 'while ! [ -c /dev/dri/card0 ]; do sleep 1; done'
+ExecStart=/usr/bin/moonlight
+Restart=on-failure
+RestartSec=5
+Nice=-10
+
+[Install]
+WantedBy=multi-user.target

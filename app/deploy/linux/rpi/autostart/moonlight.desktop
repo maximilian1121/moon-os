@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Moonlight
+Comment=Stream games from your PC
+Exec=/usr/bin/moonlight
+Terminal=false
+Categories=Game;
+X-GNOME-Autostart-enabled=true
+X-KDE-autostart-after=panel
