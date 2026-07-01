@@ -6,8 +6,8 @@ Stripped-down Moonlight Qt for Raspberry Pi 4/5. Boots straight into Moonlight â
 
 ```sh
 sudo apt update && sudo apt install -y git
-git clone https://github.com/your-fork/moonlight-qt
-cd moonlight-qt
+git clone https://github.com/maximilian1121/moon-os
+cd moon-os
 ./install.sh
 sudo reboot
 ```
