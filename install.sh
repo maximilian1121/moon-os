@@ -63,8 +63,8 @@ sudo apt-get install -y -qq qt6-quickcontrols2-6.5-dev \
     qml6-module-qtquick-controls2 2>/dev/null || true
 
 mkdir -p build-kiosk && cd build-kiosk
-qmake6 ../kiosk-shell CONFIG+=embedded QMAKE_CFLAGS_ISYSTEM=
-make -j"$(nproc)" release
+qmake6 ../kiosk-shell CONFIG+=embedded CONFIG+=release QMAKE_CFLAGS_ISYSTEM=
+make -j"$(nproc)"
 cd ..
 
 echo "Installing kiosk shell..."
@@ -82,9 +82,6 @@ After=network.target multi-user.target
 
 [Service]
 Type=simple
-User=pi
-Group=pi
-Environment=HOME=/home/pi
 Environment=QT_QPA_PLATFORM=eglfs
 Environment=QT_QPA_EGLFS_ALWAYS_SET_MODE=1
 Environment=QT_QPA_EGLFS_FORCEVSYNC=1
