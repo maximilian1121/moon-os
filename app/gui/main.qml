@@ -164,6 +164,12 @@ ApplicationWindow {
         Keys.onHangupPressed: {
             settingsButton.clicked()
         }
+
+        Keys.onUpPressed: {
+            // When content doesn't consume Up (e.g., at top of grid),
+            // focus the kiosk top bar
+            kioskTopBar.focusFirstButton()
+        }
     }
 
     // This timer keeps us polling for 5 minutes of inactivity
@@ -246,6 +252,7 @@ ApplicationWindow {
 
     header: Column {
         TopBar {
+            id: kioskTopBar
             onOpenWifiPanel: stackView.push("qrc:/gui/WifiPanel.qml")
             onOpenBluetoothPanel: stackView.push("qrc:/gui/BluetoothPanel.qml")
         }
@@ -273,18 +280,22 @@ ApplicationWindow {
                 anchors.rightMargin: 10
                 anchors.fill: parent
 
-                NavigableToolButton {
-                    // Only make the button visible if the user has navigated somewhere.
-                    visible: stackView.depth > 1
+            NavigableToolButton {
+                // Only make the button visible if the user has navigated somewhere.
+                visible: stackView.depth > 1
 
-                    iconSource: "qrc:/res/arrow_left.svg"
+                iconSource: "qrc:/res/arrow_left.svg"
 
-                    onClicked: goBack()
+                onClicked: goBack()
 
-                    Keys.onDownPressed: {
-                        stackView.currentItem.forceActiveFocus(Qt.TabFocus)
-                    }
+                Keys.onDownPressed: {
+                    stackView.currentItem.forceActiveFocus(Qt.TabFocus)
                 }
+
+                Keys.onUpPressed: {
+                    kioskTopBar.focusFirstButton()
+                }
+            }
 
                 // This label will appear when the window gets too small and
                 // we need to ensure the toolbar controls don't collide
@@ -447,6 +458,10 @@ ApplicationWindow {
 
                     Keys.onDownPressed: {
                         stackView.currentItem.forceActiveFocus(Qt.TabFocus)
+                    }
+
+                    Keys.onUpPressed: {
+                        kioskTopBar.focusFirstButton()
                     }
 
                     Shortcut {

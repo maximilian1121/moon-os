@@ -2,9 +2,9 @@
 set -e
 
 # ─────────────────────────────────────────────────────────
-#  Moonlight RPi Kiosk Installer
+#  Moonlight RPi Installer
 #  Run on a fresh Raspberry Pi OS Lite (Bookworm).
-#  Builds Moonlight and configures it to auto-start.
+#  Builds Moonlight with kiosk features and auto-start.
 # ─────────────────────────────────────────────────────────
 
 ARCH="$(uname -m)"
@@ -18,7 +18,7 @@ case "$ARCH" in
 esac
 
 echo "========================================="
-echo " Moonlight RPi Kiosk Installer"
+echo " Moonlight RPi Installer"
 echo " Arch: $PI_ARCH"
 echo "========================================="
 echo ""
@@ -50,34 +50,19 @@ qmake6 .. \
     CONFIG+=disable-libva \
     CONFIG+=disable-libvdpau \
     QMAKE_CFLAGS_ISYSTEM=
-make -j"$(nproc)" release
+make -j"$(nproc)"
 cd ..
 
 # ── Install Moonlight binary ────────────────────────────
 echo "Installing Moonlight..."
 sudo cp build/app/moonlight /usr/local/bin/
 
-# ── Build kiosk shell ──────────────────────────────────
-echo "Building kiosk shell..."
-sudo apt-get install -y -qq qt6-quickcontrols2-6.5-dev \
-    qml6-module-qtquick-controls2 2>/dev/null || true
-
-mkdir -p build-kiosk && cd build-kiosk
-qmake6 ../kiosk-shell CONFIG+=embedded CONFIG+=release QMAKE_CFLAGS_ISYSTEM=
-make -j"$(nproc)"
-cd ..
-
-echo "Installing kiosk shell..."
-sudo cp build-kiosk/moonlight-kiosk /usr/local/bin/
-sudo cp app/deploy/linux/rpi/moonlight-kiosk-launcher.sh /usr/local/bin/
-sudo chmod +x /usr/local/bin/moonlight-kiosk-launcher.sh
-
-# ── Install systemd service (kiosk) ─────────────────────
+# ── Install systemd service (kiosk mode) ────────────────
 echo "Installing kiosk service..."
 
 sudo tee /etc/systemd/system/moonlight-rpi.service > /dev/null << 'SERVICEEOF'
 [Unit]
-Description=Moonlight Kiosk (Raspberry Pi)
+Description=Moonlight (Raspberry Pi)
 After=network.target multi-user.target
 
 [Service]
@@ -89,7 +74,7 @@ Environment=SDL_VIDEODRIVER=kmsdrm
 Environment=SDL_HINT_KMSDRM_REQUIRE_DRM_MASTER=0
 Environment=DISPLAY=
 ExecStartPre=/bin/sh -c 'while ! [ -c /dev/dri/card0 ]; do sleep 1; done'
-ExecStart=/usr/local/bin/moonlight-kiosk-launcher.sh
+ExecStart=/usr/local/bin/moonlight
 Restart=on-failure
 RestartSec=5
 Nice=-10
@@ -126,7 +111,7 @@ if [ -n "$CONFIG_TXT" ]; then
     fi
 fi
 
-# ── Enable kiosk ────────────────────────────────────────
+# ── Enable kiosk mode (boot directly into Moonlight) ───
 echo "Enabling kiosk mode..."
 sudo rm -f /etc/systemd/system/display-manager.service 2>/dev/null || true
 sudo systemctl disable lightdm gdm gdm3 2>/dev/null || true

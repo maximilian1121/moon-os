@@ -15,42 +15,80 @@ Item {
     signal openWifiPanel()
     signal openBluetoothPanel()
 
+    function focusFirstButton() {
+        btButton.forceActiveFocus(Qt.TabFocus)
+    }
+
     Rectangle {
         anchors.fill: parent
         color: "#1e1e1e"
 
         RowLayout {
             anchors.fill: parent
-            anchors.leftMargin: 8
+            anchors.leftMargin: 4
             anchors.rightMargin: 8
-            spacing: 8
+            spacing: 2
 
-            Image {
-                id: btIcon
-                source: "qrc:/res/bluetooth.svg"
-                sourceSize.width: 18
-                sourceSize.height: 18
-                opacity: topBar.btConnected ? 1.0 : 0.4
+            Button {
+                id: btButton
+                flat: true
+                implicitWidth: 28
+                implicitHeight: 28
+                focusPolicy: Qt.StrongFocus
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: topBar.openBluetoothPanel()
+                contentItem: Image {
+                    source: "qrc:/res/bluetooth.svg"
+                    sourceSize.width: 16
+                    sourceSize.height: 16
+                    opacity: topBar.btConnected ? 1.0 : 0.35
+                    anchors.centerIn: parent
                 }
+
+                background: Rectangle {
+                    color: btButton.activeFocus ? "#3F51B5" : "transparent"
+                    radius: 3
+                }
+
+                onClicked: topBar.openBluetoothPanel()
+
+                ToolTip.delay: 1000
+                ToolTip.timeout: 3000
+                ToolTip.visible: hovered
+                ToolTip.text: topBar.btConnected
+                              ? qsTr("Bluetooth gamepad connected")
+                              : qsTr("No Bluetooth gamepad")
             }
 
-            Text {
-                id: wifiLabel
-                text: topBar.wifiSsid.length > 0
-                      ? topBar.wifiSsid
-                      : qsTr("No WiFi")
-                color: topBar.wifiSsid.length > 0 ? "#a0e0a0" : "#808080"
-                font.pixelSize: 12
-                verticalAlignment: Text.AlignVCenter
+            Button {
+                id: wifiButton
+                flat: true
+                implicitHeight: 28
+                focusPolicy: Qt.StrongFocus
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: topBar.openWifiPanel()
+                contentItem: Text {
+                    text: topBar.wifiSsid.length > 0
+                          ? topBar.wifiSsid
+                          : qsTr("WiFi: --")
+                    color: topBar.wifiSsid.length > 0 ? "#a0e0a0" : "#808080"
+                    font.pixelSize: 12
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.left: parent.left
+                    anchors.leftMargin: 4
                 }
+
+                background: Rectangle {
+                    color: wifiButton.activeFocus ? "#3F51B5" : "transparent"
+                    radius: 3
+                }
+
+                onClicked: topBar.openWifiPanel()
+
+                ToolTip.delay: 1000
+                ToolTip.timeout: 3000
+                ToolTip.visible: hovered
+                ToolTip.text: topBar.wifiSsid.length > 0
+                              ? qsTr("Connected to %1").arg(topBar.wifiSsid)
+                              : qsTr("Not connected")
             }
 
             Item {

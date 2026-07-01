@@ -129,4 +129,7 @@ echo "   ssh pi@raspberrypi 'sudo tar xzf /tmp/$(basename $TARBALL) -C / && sudo
 echo ""
 echo " For kiosk boot (no desktop):"
 echo "   ssh pi@raspberrypi 'sudo systemctl enable moonlight-rpi && sudo systemctl start moonlight-rpi'"
+echo ""
+echo " For local testing on PC:"
+echo "   cd app && qmake app.pro && make -j\$(nproc) && ./app/moonlight"
 echo "========================================"

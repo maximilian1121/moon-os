@@ -2,7 +2,7 @@
 set -e
 
 echo "========================================="
-echo " Moonlight RPi Kiosk Uninstaller"
+echo " Moonlight RPi Uninstaller"
 echo "========================================="
 echo ""
 
@@ -19,7 +19,7 @@ if [ -f /etc/systemd/system/moonlight-rpi.service ]; then
 fi
 
 # ── Remove binaries ────────────────────────────────────
-for bin in moonlight moonlight-kiosk moonlight-kiosk-launcher.sh; do
+for bin in moonlight; do
     if [ -f "/usr/local/bin/$bin" ]; then
         echo "Removing /usr/local/bin/$bin..."
         sudo rm "/usr/local/bin/$bin"

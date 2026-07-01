@@ -20,6 +20,16 @@ CenteredGridView {
     cellWidth: 310; cellHeight: 330;
     objectName: qsTr("Computers")
 
+    function focusTopBar() {
+        var col = window.header
+        if (col && col.children.length > 0) {
+            var tb = col.children[0]
+            if (tb && tb.focusFirstButton) {
+                tb.focusFirstButton()
+            }
+        }
+    }
+
     Component.onCompleted: {
         // Don't show any highlighted item until interacting with them.
         // We do this here instead of onActivated to avoid losing the user's
