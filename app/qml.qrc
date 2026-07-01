@@ -20,7 +20,6 @@
         <file>gui/CenteredGridView.qml</file>
         <file>gui/CliPair.qml</file>
         <file>gui/TopBar.qml</file>
-        <file>gui/WifiPanel.qml</file>
-        <file>gui/BluetoothPanel.qml</file>
+        <file>gui/WirelessPanel.qml</file>
     </qresource>
 </RCC>

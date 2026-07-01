@@ -253,8 +253,7 @@ ApplicationWindow {
     header: Column {
         TopBar {
             id: kioskTopBar
-            onOpenWifiPanel: stackView.push("qrc:/gui/WifiPanel.qml")
-            onOpenBluetoothPanel: stackView.push("qrc:/gui/BluetoothPanel.qml")
+            onOpenWirelessPanel: stackView.push("qrc:/gui/WirelessPanel.qml")
         }
 
         ToolBar {
