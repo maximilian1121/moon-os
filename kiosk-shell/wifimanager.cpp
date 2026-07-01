@@ -1,20 +1,17 @@
 #include "wifimanager.h"
 #include <QDebug>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
+#include <QSet>
 
 WifiManager::WifiManager(QObject *parent) : QObject(parent) {}
 
 void WifiManager::scan()
 {
     QProcess *p = new QProcess(this);
-    connect(p, &QProcess::finished, this, [this, p](int) {
+    QObject::connect(p, &QProcess::finished, this, [this, p](int) {
         QByteArray data = p->readAllStandardOutput();
         p->deleteLater();
 
         m_networks.clear();
-        // nmcli -t output: colon-delimited fields
         QStringList lines = QString::fromUtf8(data).split('\n', Qt::SkipEmptyParts);
         QSet<QString> seen;
 
@@ -31,9 +28,9 @@ void WifiManager::scan()
             if (ssid.isEmpty() || ssid == "--" || seen.contains(ssid)) continue;
             seen.insert(ssid);
 
-            int signal = bars.count(QLatin1Char('█')) * 25;
-            if (signal == 0 && !bars.isEmpty()) signal = bars.count('*') * 25;
-            if (signal == 0) signal = bars.count('.');  // empty boxes
+            int signal = bars.count('*') * 25;
+            if (signal == 0 && bars.length() > 0)
+                signal = qMin(bars.length() * 14, 100);
 
             QVariantMap net;
             net["ssid"] = ssid;
@@ -55,7 +52,7 @@ void WifiManager::connect(const QString &ssid, const QString &password)
     emit statusChanged();
 
     QProcess *p = new QProcess(this);
-    connect(p, &QProcess::finished, this, [this, ssid, p](int exitCode) {
+    QObject::connect(p, &QProcess::finished, this, [this, ssid, p](int exitCode) {
         QString err = p->readAllStandardError();
         p->deleteLater();
         if (exitCode == 0) {
