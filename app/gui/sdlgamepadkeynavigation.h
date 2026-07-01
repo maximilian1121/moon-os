@@ -26,6 +26,9 @@ public:
 
     Q_INVOKABLE int getConnectedGamepads();
 
+signals:
+    void gamepadActivityDetected();
+
 private:
     void sendKey(QEvent::Type type, Qt::Key key, Qt::KeyboardModifiers modifiers = Qt::NoModifier);
 

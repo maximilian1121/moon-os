@@ -13,6 +13,11 @@ DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
 CONFIG += link_pkgconfig
 PKGCONFIG += openssl sdl2 SDL2_ttf opus
 
+packagesExist(libcec) {
+    PKGCONFIG += libcec
+    DEFINES += HAS_CEC
+}
+
 !disable-ffmpeg {
     packagesExist(libavcodec) {
         PKGCONFIG += libavcodec libavutil libswscale
@@ -82,6 +87,9 @@ SOURCES += \
     streaming/bandwidth.cpp \
     streaming/streamutils.cpp \
     backend/autoupdatechecker.cpp \
+    backend/wifimanager.cpp \
+    backend/bluetoothmanager.cpp \
+    backend/cecmanager.cpp \
     path.cpp \
     settings/mappingmanager.cpp \
     gui/sdlgamepadkeynavigation.cpp \
@@ -120,6 +128,9 @@ HEADERS += \
     streaming/bandwidth.h \
     streaming/streamutils.h \
     backend/autoupdatechecker.h \
+    backend/wifimanager.h \
+    backend/bluetoothmanager.h \
+    backend/cecmanager.h \
     path.h \
     settings/mappingmanager.h \
     gui/sdlgamepadkeynavigation.h \

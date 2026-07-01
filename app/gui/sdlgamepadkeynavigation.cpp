@@ -124,6 +124,8 @@ void SdlGamepadKeyNavigation::onPollingTimerFired()
             QCoreApplication::instance()->quit();
             break;
         case SDL_CONTROLLERBUTTONDOWN:
+            emit gamepadActivityDetected();
+            // fall through
         case SDL_CONTROLLERBUTTONUP:
         {
             QEvent::Type type =
@@ -217,6 +219,8 @@ void SdlGamepadKeyNavigation::onPollingTimerFired()
         }
     }
 
+    bool axisActivity = false;
+
     // Handle analog sticks by polling
     for (auto gc : std::as_const(m_Gamepads)) {
         short leftX = SDL_GameControllerGetAxis(gc, SDL_CONTROLLER_AXIS_LEFTX);
@@ -225,6 +229,7 @@ void SdlGamepadKeyNavigation::onPollingTimerFired()
             // Do nothing
         }
         else if (leftY < -30000) {
+            axisActivity = true;
             if (m_UiNavMode) {
                 // Back-tab
                 sendKey(QEvent::Type::KeyPress, Qt::Key_Tab, Qt::ShiftModifier);
@@ -238,6 +243,7 @@ void SdlGamepadKeyNavigation::onPollingTimerFired()
             m_LastAxisNavigationEventTime = SDL_GetTicks();
         }
         else if (leftY > 30000) {
+            axisActivity = true;
             if (m_UiNavMode) {
                 sendKey(QEvent::Type::KeyPress, Qt::Key_Tab);
                 sendKey(QEvent::Type::KeyRelease, Qt::Key_Tab);
@@ -250,15 +256,21 @@ void SdlGamepadKeyNavigation::onPollingTimerFired()
             m_LastAxisNavigationEventTime = SDL_GetTicks();
         }
         else if (leftX < -30000) {
+            axisActivity = true;
             sendKey(QEvent::Type::KeyPress, Qt::Key_Left);
             sendKey(QEvent::Type::KeyRelease, Qt::Key_Left);
             m_LastAxisNavigationEventTime = SDL_GetTicks();
         }
         else if (leftX > 30000) {
+            axisActivity = true;
             sendKey(QEvent::Type::KeyPress, Qt::Key_Right);
             sendKey(QEvent::Type::KeyRelease, Qt::Key_Right);
             m_LastAxisNavigationEventTime = SDL_GetTicks();
         }
+    }
+
+    if (axisActivity) {
+        emit gamepadActivityDetected();
     }
 }
 
